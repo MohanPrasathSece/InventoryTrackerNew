@@ -53,13 +53,13 @@ To run this project locally, follow these steps:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/inventory-management-system.git
-   cd inventory-management-system
+   git clone https://github.com/tharumax123/MERN-Inventory-Management-System.git
+   cd merninventory
    ```
 
-2. **Install dependencies:**
+2. Install dependencies:
 
-   For the frontend:
+   For the frontend
 
    ```bash
    cd frontend
@@ -75,7 +75,7 @@ To run this project locally, follow these steps:
 3. Run the backend server:
 
    ```bash
-   npm run dev
+   cd node sever.js
    ```
 
 4. Run the frontend server:
@@ -89,16 +89,16 @@ To run this project locally, follow these steps:
 
 5. Access the application:
 
-   Open your browser and go to `http://localhost:3000`.
+   Open your browser and go to  `http://localhost:5173/`
 
  Usage
 
-- Login or **Signup** to access the system.
+- Login or Signup to access the system.
 - Navigate between sections using the sidebar menu (Orders, Suppliers, Inventory, Sales, Employees, etc.).
 - Switch between light and dark mode in the settings section.
 - Log out when done.
 
-## Screenshots
+ Screenshots
 ![image](https://github.com/user-attachments/assets/059dc76f-836e-438d-b9d3-adba90b79b7a)
 ![image](https://github.com/user-attachments/assets/28454e0b-11e2-4667-925a-346e650095b7)
 ![image](https://github.com/user-attachments/assets/03f4a0bd-fa51-4279-95d2-256a7f0d7b6a)
@@ -111,35 +111,18 @@ To run this project locally, follow these steps:
 ![image](https://github.com/user-attachments/assets/d005ba0a-8aa2-4cb9-bc70-72c00da208a1)
 ![image](https://github.com/user-attachments/assets/2770f14a-5558-4378-a219-13c719f3ff84)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## Contributing
+Contributing
 
 Contributions are welcome! If you find bugs or have suggestions for new features, feel free to open an issue or submit a pull request.
 
-## License
+ License
 
 This project is licensed under the MIT License.
 
-## Contact
+Contact
 
 For any questions or feedback, feel free to contact me:
 
-- Email: your-email@example.com
-- GitHub: [your-username](https://github.com/your-username)
+- Email: your-tharushabishan8@gmail.com
+- GitHub: [https://github.com/tharumax123]
 
----
-
-This README file provides a complete overview of your Inventory Management System, including features, installation instructions, usage, and contribution guidelines. You can customize the placeholder sections like repository URLs, MongoDB connection strings, and contact information as needed.
