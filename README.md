@@ -72,23 +72,13 @@ To run this project locally, follow these steps:
    cd ../backend
    npm install
    ```
-
-3. **Set up environment variables:**
-
-   Create a `.env` file in the backend directory and include the following:
-
-   ```env
-   MONGO_URI=your_mongodb_connection_string
-   JWT_SECRET=your_jwt_secret_key
-   ```
-
-4. **Run the backend server:**
+3. Run the backend server:
 
    ```bash
    npm run dev
    ```
 
-5. **Run the frontend server:**
+4. Run the frontend server:
 
    Go back to the frontend directory:
 
@@ -97,20 +87,20 @@ To run this project locally, follow these steps:
    npm run dev
    ```
 
-6. **Access the application:**
+5. Access the application:
 
    Open your browser and go to `http://localhost:3000`.
 
-## Usage
+ Usage
 
-- **Login** or **Signup** to access the system.
+- Login or **Signup** to access the system.
 - Navigate between sections using the sidebar menu (Orders, Suppliers, Inventory, Sales, Employees, etc.).
 - Switch between light and dark mode in the settings section.
 - Log out when done.
 
 ## Screenshots
+![image](https://github.com/user-attachments/assets/e6a853ae-b2fe-4982-ad71-ae17ea0af7ed)
 
-*(Include some screenshots or GIFs to show what the application looks like. This helps others see the UI and main features.)*
 
 ## Contributing
 
