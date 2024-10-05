@@ -100,6 +100,7 @@ To run this project locally, follow these steps:
 
 ## Screenshots
 ![image](https://github.com/user-attachments/assets/e6a853ae-b2fe-4982-ad71-ae17ea0af7ed)
+![image](https://github.com/user-attachments/assets/ad49002f-ddd5-4fdf-88b0-7ec6c9bea611)
 
 
 ## Contributing
