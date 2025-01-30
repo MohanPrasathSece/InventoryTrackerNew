@@ -61,7 +61,6 @@ const ManageSuppliers = () => {
             <th>Supplier Name</th>
             <th>Phone</th>
             <th>Email</th>
-            <th>Address</th>
             <th>Supply Products</th>
             <th>Payment Terms</th>
             <th>Actions</th>
@@ -73,7 +72,6 @@ const ManageSuppliers = () => {
               <td>{supplier.supplierName}</td>
               <td>{supplier.phone}</td>
               <td>{supplier.email}</td>
-              <td>{supplier.address}</td>
               <td>{supplier.supplyProducts}</td>
               <td>{supplier.paymentTerms}</td>
               <td>
@@ -83,7 +81,7 @@ const ManageSuppliers = () => {
             </tr>
           )) : (
             <tr>
-              <td colSpan="7" className="text-center">No suppliers found</td>
+              <td colSpan="6" className="text-center">No suppliers found</td>
             </tr>
           )}
         </tbody>

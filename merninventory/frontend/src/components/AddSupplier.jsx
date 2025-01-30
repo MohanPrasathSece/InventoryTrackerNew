@@ -1,103 +1,134 @@
 import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const AddSupplier = () => {
-  // State to manage form data
-  const [supplier, setSupplier] = useState({
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
     supplierName: '',
-    phone: '',
     email: '',
-    address: '',
+    phone: '',
     supplyProducts: '',
-    paymentTerms: '',
+    paymentTerms: ''
   });
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  // Handle form submission
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccess('');
+
     try {
-      // Sending data to the backend
-      await axios.post('http://localhost:5000/api/suppliers', supplier);
-      alert('Supplier added successfully');
-      setSupplier({
+      const response = await axios.post('http://localhost:5000/api/suppliers', formData);
+      console.log('Supplier created:', response.data);
+      setSuccess('Supplier added successfully!');
+      
+      // Reset form
+      setFormData({
         supplierName: '',
-        phone: '',
         email: '',
-        address: '',
+        phone: '',
         supplyProducts: '',
-        paymentTerms: '',
+        paymentTerms: ''
       });
+
+      // Redirect to manage suppliers page after 2 seconds
+      setTimeout(() => {
+        navigate('/dashboard/suppliers/manage');
+      }, 2000);
     } catch (error) {
-      console.error('Error adding supplier:', error);
+      console.error('Error creating supplier:', error);
+      setError(error.response?.data?.message || 'Error adding supplier. Please try again.');
     }
   };
 
   return (
-    <div className="container mt-5">
-      <h2>Add Supplier</h2>
+    <div className="container mt-4">
+      <h2>Add New Supplier</h2>
+      {error && <div className="alert alert-danger">{error}</div>}
+      {success && <div className="alert alert-success">{success}</div>}
+      
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
-          <label className="form-label">Supplier Name</label>
+          <label htmlFor="supplierName" className="form-label">Supplier Name</label>
           <input
             type="text"
             className="form-control"
-            value={supplier.supplierName}
-            onChange={(e) => setSupplier({ ...supplier, supplierName: e.target.value })}
+            id="supplierName"
+            name="supplierName"
+            value={formData.supplierName}
+            onChange={handleChange}
             required
           />
         </div>
+
         <div className="mb-3">
-          <label className="form-label">Phone</label>
-          <input
-            type="tel"
-            className="form-control"
-            value={supplier.phone}
-            onChange={(e) => setSupplier({ ...supplier, phone: e.target.value })}
-            required
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Email</label>
+          <label htmlFor="email" className="form-label">Email</label>
           <input
             type="email"
             className="form-control"
-            value={supplier.email}
-            onChange={(e) => setSupplier({ ...supplier, email: e.target.value })}
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
             required
           />
         </div>
+
         <div className="mb-3">
-          <label className="form-label">Address</label>
+          <label htmlFor="phone" className="form-label">Phone Number</label>
+          <input
+            type="tel"
+            className="form-control"
+            id="phone"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            placeholder="10-digit phone number"
+            pattern="[0-9]{10}"
+            required
+          />
+          <small className="text-muted">Please enter a 10-digit phone number</small>
+        </div>
+
+        <div className="mb-3">
+          <label htmlFor="supplyProducts" className="form-label">Supply Products</label>
           <input
             type="text"
             className="form-control"
-            value={supplier.address}
-            onChange={(e) => setSupplier({ ...supplier, address: e.target.value })}
+            id="supplyProducts"
+            name="supplyProducts"
+            value={formData.supplyProducts}
+            onChange={handleChange}
             required
           />
         </div>
+
         <div className="mb-3">
-          <label className="form-label">Supply Products</label>
+          <label htmlFor="paymentTerms" className="form-label">Payment Terms</label>
           <input
             type="text"
             className="form-control"
-            value={supplier.supplyProducts}
-            onChange={(e) => setSupplier({ ...supplier, supplyProducts: e.target.value })}
+            id="paymentTerms"
+            name="paymentTerms"
+            value={formData.paymentTerms}
+            onChange={handleChange}
             required
           />
         </div>
-        <div className="mb-3">
-          <label className="form-label">Payment Terms</label>
-          <input
-            type="text"
-            className="form-control"
-            value={supplier.paymentTerms}
-            onChange={(e) => setSupplier({ ...supplier, paymentTerms: e.target.value })}
-            required
-          />
-        </div>
-        <button type="submit" className="btn btn-primary">Add Supplier</button>
+
+        <button type="submit" className="btn btn-primary">
+          Add Supplier
+        </button>
       </form>
     </div>
   );
