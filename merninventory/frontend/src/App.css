@@ -2,7 +2,7 @@
 .sidebar {
   height: 100vh; /* Full height */
   position: fixed;
-  background-color: #343a40;
+  background-color: #ffffff;
   width: 220px; /* Fixed sidebar width */
   top: 0;
   left: 0;
@@ -18,14 +18,14 @@
 }
 
 .sidebar a:hover {
-  background-color: #495057;
+  background-color: #ffffff;
 }
 
 /* Navbar */
 .navbar {
   height: 60px;
   width: calc(100% - 198px); /* Ensure width adjusts based on sidebar width */
-  background-color: #343a40;
+  background-color: #ffffff;
   color: #fff;
   display: flex;
   justify-content: space-between;
@@ -71,7 +71,7 @@
 /* Table header styling */
 .custom-table thead th {
   background-color: #3dc0f8; /* Light grey header */
-  color: #495057; /* Dark grey text */
+  color: #ffffff; /* Dark grey text */
 }
 
 /* Background color for Charts */

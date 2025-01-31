@@ -31,7 +31,7 @@ const Sidebar = () => {
       <ul className="nav flex-column">
         <li className="nav-item mb-3">
           <Link to="/dashboard" className="nav-link text-white d-flex align-items-center">
-            <i className="bi bi-speedometer2 me-2"></i> Dashboard
+            <i></i> Dashboard
           </Link>
         </li>
 
@@ -41,7 +41,7 @@ const Sidebar = () => {
             className="nav-link text-white d-flex align-items-center bg-dark border-0 w-100 text-start" 
             onClick={toggleOrdersDropdown}
             style={{ cursor: 'pointer' }}>
-            <i className="bi bi-receipt me-2"></i> Orders
+            <i ></i> Orders
             <i className={`bi ${isOrdersOpen ? 'bi-chevron-up' : 'bi-chevron-down'} ms-auto`}></i>
           </button>
 
@@ -72,7 +72,7 @@ const Sidebar = () => {
             className="nav-link text-white d-flex align-items-center bg-dark border-0 w-100 text-start" 
             onClick={toggleSuppliersDropdown}
             style={{ cursor: 'pointer' }}>
-            <i className="bi bi-truck me-2"></i> Suppliers
+            <i ></i> Suppliers
             <i className={`bi ${isSuppliersOpen ? 'bi-chevron-up' : 'bi-chevron-down'} ms-auto`}></i>
           </button>
 
@@ -98,7 +98,7 @@ const Sidebar = () => {
             className="nav-link text-white d-flex align-items-center bg-dark border-0 w-100 text-start" 
             onClick={toggleProductsDropdown}
             style={{ cursor: 'pointer' }}>
-            <i className="bi bi-box me-2"></i> Products
+            <i ></i> Products
             <i className={`bi ${isProductsOpen ? 'bi-chevron-up' : 'bi-chevron-down'} ms-auto`}></i>
           </button>
 
@@ -124,7 +124,7 @@ const Sidebar = () => {
             className="nav-link text-white d-flex align-items-center bg-dark border-0 w-100 text-start" 
             onClick={toggleSalesDropdown}
             style={{ cursor: 'pointer' }}>
-            <i className="bi bi-receipt me-2"></i> Sales & Reports
+            <i></i> Sales & Reports
             <i className={`bi ${isSalesOpen ? 'bi-chevron-up' : 'bi-chevron-down'} ms-auto`}></i>
           </button>
 
