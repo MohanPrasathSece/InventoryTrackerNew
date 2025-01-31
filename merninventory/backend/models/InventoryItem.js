@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 
-// Define the schema for inventory items
 const inventoryItemSchema = new mongoose.Schema({
   name: { type: String, required: true },
   quantity: { type: Number, required: true },
