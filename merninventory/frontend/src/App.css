@@ -218,7 +218,7 @@ body {
 
 .custom-table thead th {
   background-color: #000000;
-  color: #ffffff;
+  color: #000000;
   padding: 1rem;
 }
 
@@ -247,6 +247,7 @@ body {
   border-radius: 4px;
   padding: 0.5rem 0.75rem;
   background-color: #ffffff;
+  color: #000; /* Ensure input text color is black */
 }
 
 .form-control:focus {
@@ -258,7 +259,7 @@ body {
 .btn-primary {
   background-color: #000000;
   border-color: #000000;
-  color: #ffffff;
+  color: #000000;
 }
 
 .btn-primary:hover,

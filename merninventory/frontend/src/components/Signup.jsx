@@ -1,57 +1,84 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import './Signup.css';
 
 const Signup = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
+
     try {
-      const response = await axios.post('http://localhost:5000/api/signup', { 
-        email, 
-        password 
+      const response = await axios.post('http://localhost:5000/api/signup', {
+        name,
+        email,
+        password
       });
-      
+
       if (response.data.success) {
         localStorage.setItem('token', response.data.token);
         navigate('/dashboard');
+      } else {
+        setError(response.data.message || 'Signup failed');
       }
     } catch (error) {
-      console.error('Signup error:', error);
+      setError(error.response?.data?.message || 'Error connecting to server');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="auth-form-container">
-      <div className="auth-form-box">
+    <div className="auth-container">
+      <div className="auth-box">
         <h2>Create Account</h2>
+        {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleSignup}>
           <div className="form-group">
             <input
+              type="text"
+              placeholder="Full Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              disabled={loading}
+            />
+          </div>
+          <div className="form-group">
+            <input
               type="email"
-              placeholder="Enter Email"
+              placeholder="Email Address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              disabled={loading}
             />
           </div>
           <div className="form-group">
             <input
               type="password"
-              placeholder="Enter Password"
+              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              minLength="6"
+              disabled={loading}
             />
           </div>
-          <button type="submit">Sign Up</button>
+          <button type="submit" disabled={loading}>
+            {loading ? 'Creating Account...' : 'Sign Up'}
+          </button>
         </form>
-        <p>
-          Already have an account? <a href="/login">Login</a>
+        <p className="auth-link">
+          Already have an account? <Link to="/login">Login</Link>
         </p>
       </div>
     </div>

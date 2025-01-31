@@ -6,21 +6,19 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-const User = require('./models/User'); 
-const supplierRoutes = require('./routes/supplierRoutes'); 
+const User = require('./models/User');
+const supplierRoutes = require('./routes/supplierRoutes');
 const salesRoutes = require('./routes/salesRoutes');
 const reportsRoutes = require('./routes/reportsRoutes');
 const productRoutes = require('./routes/productRoutes');
 const dbStatusRoutes = require('./routes/dbStatus');
 
 const app = express();
-
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// Middleware
 app.use(cors({
-  origin: 'http://localhost:5173', 
+  origin: 'http://localhost:5173',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -28,15 +26,13 @@ app.use(cors({
 app.use(express.json());
 app.use(bodyParser.json());
 
-// MongoDB Connection with retry logic
 const connectWithRetry = async () => {
   const maxRetries = 5;
   let retries = 0;
 
   while (retries < maxRetries) {
     try {
-      console.log('Attempting to connect to MongoDB...');
-      
+      console.log('Connecting to MongoDB...');
       await mongoose.connect(process.env.MONGODB_URI, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -44,46 +40,37 @@ const connectWithRetry = async () => {
         serverSelectionTimeoutMS: 5000,
         heartbeatFrequencyMS: 1000,
       });
-      
-      console.log('Successfully connected to MongoDB Atlas');
-      console.log('Database:', mongoose.connection.name);
-      console.log('Host:', mongoose.connection.host);
-      
-      // Get reference to the database
-      const db = mongoose.connection.db;
-      
-      // List all collections
-      const collections = await db.listCollections().toArray();
-      const collectionNames = collections.map(col => col.name);
-      
-      console.log('Current collections:', collectionNames);
-      
-      // Create collections if they don't exist
-      const requiredCollections = ['suppliers', 'products', 'orders', 'sales', 'users'];
-      for (const collection of requiredCollections) {
-        if (!collectionNames.includes(collection)) {
+
+  console.log('MongoDB connected successfully');
+console.log('Database:', mongoose.connection.name);
+console.log('Host:', mongoose.connection.host);
+
+const db = mongoose.connection.db;
+ const collections = await db.listCollections().toArray();
+
+ const collectionNames = collections.map(col => col.name);
+ console.log('Existing collections:', collectionNames);
+
+ const requiredCollections = ['suppliers', 'products', 'orders', 'sales', 'users'];
+     for (const collection of requiredCollections) {
+ if (!collectionNames.includes(collection)) {
           await db.createCollection(collection);
-          console.log(`Created ${collection} collection`);
+          console.log(`Created collection: ${collection}`);
         }
       }
-
-      // Set up connection error handlers
-      mongoose.connection.on('error', (err) => {
-        console.error('MongoDB connection error:', err);
-      });
-
+  mongoose.connection.on('error', (err) => console.error('MongoDB error:', err));
       mongoose.connection.on('disconnected', () => {
-        console.log('MongoDB disconnected. Attempting to reconnect...');
+console.log('MongoDB disconnected. Retrying...');
         setTimeout(connectWithRetry, 5000);
       });
 
       return;
     } catch (error) {
       retries++;
-      console.error(`MongoDB connection attempt ${retries} failed:`, error.message);
-      
-      if (retries === maxRetries) {
-        console.error('Max retries reached. Could not connect to MongoDB.');
+      console.error(`MongoDB connection failed (attempt ${retries}):`, error.message);
+
+      if (retries >= maxRetries) {
+        console.error('Exceeded maximum retries. Exiting...');
         process.exit(1);
       }
       
@@ -92,90 +79,68 @@ const connectWithRetry = async () => {
   }
 };
 
-// Initial connection
 connectWithRetry();
 
-// Test route to check database connection
 app.get('/api/test-db', async (req, res) => {
   try {
     const connectionState = mongoose.connection.readyState;
-    const stateMap = {
-      0: 'disconnected',
-      1: 'connected',
-      2: 'connecting',
-      3: 'disconnecting'
-    };
-    
-    let stats = null;
-    let collections = [];
-    
+    const stateMap = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
+
+    let stats = null, collections = [];
     if (connectionState === 1) {
       const db = mongoose.connection.db;
       stats = await db.stats();
       collections = await db.listCollections().toArray();
     }
-    
+
     res.json({
       connected: connectionState === 1,
       connectionState: stateMap[connectionState],
       database: mongoose.connection.name,
       host: mongoose.connection.host,
-      stats: stats,
+      stats,
       collections: collections.map(col => col.name)
     });
   } catch (error) {
-    console.error('Error in /api/test-db route:', error);
-    res.status(500).json({ 
+    console.error('Error in /api/test-db:', error);
+    res.status(500).json({
       error: error.message,
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 });
 
-// Routes
 app.use('/api/suppliers', supplierRoutes);
 app.use('/api/sales', salesRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/db-status', dbStatusRoutes);
 
-// Login route
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
-  try {
-    // Accept any credentials
-    res.json({ 
-      success: true, 
-      message: 'Login successful',
-      token: 'dummy-token'
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, message: 'Server error' });
+
+  if (!email || !password) {
+    return res.status(400).json({ success: false, message: 'Email and password are required' });
   }
+
+  res.json({ success: true, message: 'Login successful', token: `dummy-token-${Date.now()}` });
 });
 
-// Signup route
 app.post('/api/signup', async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    // Accept any credentials
-    res.json({ 
-      success: true, 
-      message: 'Signup successful',
-      token: 'dummy-token'
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, message: 'Server error' });
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    return res.status(400).json({ success: false, message: 'Name, email, and password are required' });
   }
+
+  res.json({ success: true, message: 'Account created', token: `dummy-token-${Date.now()}` });
 });
 
-// Logout route
 app.post('/api/logout', (req, res) => {
   res.clearCookie('token');
-  return res.status(200).json({ message: 'Logged out successfully' });
+  res.status(200).json({ message: 'Logged out successfully' });
 });
 
-// Order Schema
 const orderSchema = new mongoose.Schema({
   customerName: String,
   productName: String,
@@ -185,7 +150,6 @@ const orderSchema = new mongoose.Schema({
 
 const Order = mongoose.model('Order', orderSchema);
 
-// Order routes
 app.post('/api/orders', async (req, res) => {
   const { customerName, productName, quantity, price } = req.body;
 
@@ -193,7 +157,7 @@ app.post('/api/orders', async (req, res) => {
     const newOrder = new Order({ customerName, productName, quantity, price });
     await newOrder.save();
     res.status(201).json(newOrder);
-  } catch (err) {
+  } catch (error) {
     res.status(500).json({ error: 'Failed to create order' });
   }
 });
@@ -202,7 +166,7 @@ app.get('/api/orders', async (req, res) => {
   try {
     const orders = await Order.find();
     res.status(200).json(orders);
-  } catch (err) {
+  } catch (error) {
     res.status(500).json({ error: 'Failed to fetch orders' });
   }
 });
@@ -210,52 +174,34 @@ app.get('/api/orders', async (req, res) => {
 app.put('/api/orders/:id', async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
-    if (order) {
-      order.customerName = req.body.customerName || order.customerName;
-      order.productName = req.body.productName || order.productName;
-      order.quantity = req.body.quantity || order.quantity;
-      order.price = req.body.price || order.price;
+    if (!order) return res.status(404).json({ message: 'Order not found' });
 
-      const updatedOrder = await order.save();
-      res.json(updatedOrder);
-    } else {
-      res.status(404).json({ message: 'Order not found' });
-    }
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+    Object.assign(order, req.body);
+    const updatedOrder = await order.save();
+    res.json(updatedOrder);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 });
 
 app.delete('/api/orders/:id', async (req, res) => {
   try {
     const order = await Order.findByIdAndDelete(req.params.id);
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
-    }
-    res.json({ message: 'Order deleted successfully' });
-  } catch (err) {
-    res.status(400).json({ message: err.message });
+    if (!order) return res.status(404).json({ message: 'Order not found' });
+
+    res.json({ message: 'Order deleted' });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
   }
 });
 
-// Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err);
-  res.status(500).json({
-    message: 'Something went wrong!',
-    error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
-  });
+  res.status(500).json({ message: 'Internal server error', error: process.env.NODE_ENV === 'development' ? err.message : undefined });
 });
 
-// Handle 404 routes
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
-});
+app.use((req, res) => res.status(404).json({ message: 'Route not found' }));
 
-// Start server only after successful database connection
 mongoose.connection.once('open', () => {
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-    console.log(`MongoDB connected: ${mongoose.connection.host}`);
-  });
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 });

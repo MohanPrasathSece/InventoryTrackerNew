@@ -69,21 +69,23 @@ const AddSupplier = () => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Email</label>
-            <input
-              type="email"
-              className="form-control"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              style={{ 
-                background: 'rgba(255, 255, 255, 0.6)', 
-                backdropFilter: 'blur(5px)',
-                color: '#fff'
-              }}
-            />
-          </div>
+  <label htmlFor="email" className="form-label">Email</label>
+  <input
+    id="email"
+    type="email"
+    className="form-control"
+    name="email"
+    value={formData.email}
+    onChange={handleChange}
+    required
+    style={{
+      backgroundColor: 'rgba(255, 255, 255, 0.6)',
+      
+      color: '#fff',
+    }}
+  />
+</div>
+
 
           <div className="mb-3">
             <label className="form-label">Phone Number</label>
