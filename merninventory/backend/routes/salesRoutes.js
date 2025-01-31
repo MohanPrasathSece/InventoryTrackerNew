@@ -2,7 +2,6 @@ const express = require('express');
 const Sales = require('../models/sales');
 const router = express.Router();
 
-// Add a new sales record
 router.post('/add', async (req, res) => {
   try {
     const newSale = new Sales(req.body);
