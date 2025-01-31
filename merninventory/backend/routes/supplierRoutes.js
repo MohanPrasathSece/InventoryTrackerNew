@@ -60,10 +60,10 @@ router.get('/:id', async (req, res) => {
 // Create a new supplier
 router.post('/', async (req, res) => {
   try {
-    const { supplierName, email, phone } = req.body;
+    const { supplierName, email, phone, supplyProducts, paymentTerms } = req.body;
 
     // Validate required fields
-    if (!supplierName || !email || !phone) {
+    if (!supplierName || !email || !phone || !supplyProducts || !paymentTerms) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -76,13 +76,21 @@ router.post('/', async (req, res) => {
     const supplier = new Supplier({
       supplierName,
       email,
-      phone
+      phone,
+      supplyProducts,
+      paymentTerms
     });
 
     const savedSupplier = await supplier.save();
     res.status(201).json(savedSupplier);
   } catch (error) {
     console.error('Error creating supplier:', error);
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ 
+        message: 'Validation error', 
+        errors: Object.values(error.errors).map(err => err.message)
+      });
+    }
     res.status(500).json({ message: 'Error creating supplier', error: error.message });
   }
 });

@@ -51,17 +51,9 @@ const ManageProducts = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>Manage Products</h2>
         <div>
-          <Link to="/dashboard/products/add" className="btn btn-primary me-2">
+          <Link to="/dashboard/products/add" className="btn btn-primary">
             Add New Product
           </Link>
-          <a 
-            href="http://localhost:5000/api/products/report"
-            className="btn btn-success"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Generate Report
-          </a>
         </div>
       </div>
 

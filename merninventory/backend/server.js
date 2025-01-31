@@ -143,14 +143,12 @@ app.use('/api/db-status', dbStatusRoutes);
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ success: false, message: 'Invalid password' });
-
-    const token = jwt.sign({ id: user._id }, JWT_SECRET);
-    return res.json({ success: true, token });
+    // Accept any credentials
+    res.json({ 
+      success: true, 
+      message: 'Login successful',
+      token: 'dummy-token'
+    });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Server error' });
   }
@@ -160,14 +158,12 @@ app.post('/api/login', async (req, res) => {
 app.post('/api/signup', async (req, res) => {
   const { email, password } = req.body;
   try {
-    const userExists = await User.findOne({ email });
-    if (userExists) return res.status(400).json({ success: false, message: 'User already exists' });
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ email, password: hashedPassword });
-    await newUser.save();
-
-    return res.json({ success: true });
+    // Accept any credentials
+    res.json({ 
+      success: true, 
+      message: 'Signup successful',
+      token: 'dummy-token'
+    });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Server error' });
   }

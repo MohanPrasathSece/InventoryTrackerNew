@@ -12,11 +12,9 @@ import ManageOrders from './components/ManageOrders';
 import AddSupplier from './components/AddSupplier';
 import ManageSuppliers from './components/ManageSuppliers';
 import EditSupplier from './components/EditSupplier';
-import AddSalesRecord from './components/AddSalesRecord';
-import ManageSales from './components/ManageSales';
-import GenerateReport from './components/GenerateReport';
 import AddProduct from './components/AddProduct';
 import ManageProducts from './components/ManageProducts';
+import EditProduct from './components/EditProduct';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
@@ -39,9 +37,7 @@ function App() {
           <Route path="suppliers/edit/:id" element={<EditSupplier />} />
           <Route path="products/add" element={<AddProduct />} />
           <Route path="products/manage" element={<ManageProducts />} />
-          <Route path="sales/add" element={<AddSalesRecord />} />
-          <Route path="sales/manage" element={<ManageSales />} />
-          <Route path="sales/report" element={<GenerateReport />} />
+          <Route path="products/edit/:id" element={<EditProduct />} />
         </Route>
       </Routes>
     </Router>

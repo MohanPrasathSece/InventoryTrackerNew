@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
-const AddProduct = () => {
+const EditProduct = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [suppliers, setSuppliers] = useState([]);
   const [error, setError] = useState('');
-  
   const [formData, setFormData] = useState({
     productName: '',
     description: '',
@@ -17,17 +17,31 @@ const AddProduct = () => {
   });
 
   useEffect(() => {
-    fetchSuppliers();
-  }, []);
+    const fetchData = async () => {
+      try {
+        const [productRes, suppliersRes] = await Promise.all([
+          axios.get(`http://localhost:5000/api/products/${id}`),
+          axios.get('http://localhost:5000/api/suppliers')
+        ]);
 
-  const fetchSuppliers = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/suppliers');
-      setSuppliers(response.data);
-    } catch (error) {
-      setError('Error fetching suppliers: ' + (error.response?.data?.message || error.message));
-    }
-  };
+        if (productRes.data) {
+          setFormData({
+            productName: productRes.data.productName,
+            description: productRes.data.description,
+            category: productRes.data.category,
+            price: productRes.data.price,
+            quantity: productRes.data.quantity,
+            supplier: productRes.data.supplier
+          });
+        }
+        setSuppliers(suppliersRes.data);
+      } catch (error) {
+        setError('Error fetching data: ' + (error.response?.data?.message || error.message));
+      }
+    };
+
+    fetchData();
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,20 +56,20 @@ const AddProduct = () => {
     setError('');
 
     try {
-      await axios.post('http://localhost:5000/api/products', formData);
+      await axios.put(`http://localhost:5000/api/products/${id}`, formData);
       navigate('/dashboard/products/manage');
     } catch (error) {
-      setError(error.response?.data?.message || 'Error adding product. Please try again.');
+      setError(error.response?.data?.message || 'Error updating product. Please try again.');
     }
   };
 
   return (
     <div className="page-container">
       <div style={{ maxWidth: '400px', margin: '0 auto', padding: '2rem' }}>
-        <h2 className="text-center mb-4" style={{ color: '#000', textShadow: '1px 1px 2px rgba(255, 255, 255, 0.5)' }}>Add New Product</h2>
+        <h2 className="text-center mb-4" style={{ color: '#000' }}>Edit Product</h2>
         {error && <div className="alert alert-danger">{error}</div>}
         
-        <form onSubmit={handleSubmit} style={{ background: 'transparent' }}>
+        <form onSubmit={handleSubmit} style={{ background: '#fff', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}>
           <div className="mb-3">
             <label className="form-label">Product Name</label>
             <input
@@ -66,9 +80,8 @@ const AddProduct = () => {
               onChange={handleChange}
               required
               style={{ 
-                background: 'rgba(255, 255, 255, 0.6)', 
-                backdropFilter: 'blur(5px)',
-                color: '#fff'
+                background: '#fff',
+                color: '#000'
               }}
             />
           </div>
@@ -83,9 +96,8 @@ const AddProduct = () => {
               required
               rows="2"
               style={{ 
-                background: 'rgba(255, 255, 255, 0.6)', 
-                backdropFilter: 'blur(5px)',
-                color: '#fff'
+                background: '#fff',
+                color: '#000'
               }}
             />
           </div>
@@ -100,9 +112,8 @@ const AddProduct = () => {
               onChange={handleChange}
               required
               style={{ 
-                background: 'rgba(255, 255, 255, 0.6)', 
-                backdropFilter: 'blur(5px)',
-                color: '#fff'
+                background: '#fff',
+                color: '#000'
               }}
             />
           </div>
@@ -118,9 +129,8 @@ const AddProduct = () => {
                 onChange={handleChange}
                 required
                 style={{ 
-                  background: 'rgba(255, 255, 255, 0.6)', 
-                  backdropFilter: 'blur(5px)',
-                  color: '#fff'
+                  background: '#fff',
+                  color: '#000'
                 }}
               />
             </div>
@@ -134,9 +144,8 @@ const AddProduct = () => {
                 onChange={handleChange}
                 required
                 style={{ 
-                  background: 'rgba(255, 255, 255, 0.6)', 
-                  backdropFilter: 'blur(5px)',
-                  color: '#fff'
+                  background: '#fff',
+                  color: '#000'
                 }}
               />
             </div>
@@ -151,9 +160,8 @@ const AddProduct = () => {
               onChange={handleChange}
               required
               style={{ 
-                background: 'rgba(255, 255, 255, 0.6)', 
-                backdropFilter: 'blur(5px)',
-                color: '#fff'
+                background: '#fff',
+                color: '#000'
               }}
             >
               <option value="">Select Supplier</option>
@@ -165,17 +173,19 @@ const AddProduct = () => {
             </select>
           </div>
 
-          <div className="d-grid">
+          <div className="d-grid gap-2">
             <button 
               type="submit" 
               className="btn btn-primary"
-              style={{ 
-                background: 'rgba(13, 110, 253, 0.9)',
-                backdropFilter: 'blur(5px)',
-                border: 'none'
-              }}
             >
-              Add Product
+              Update Product
+            </button>
+            <button 
+              type="button" 
+              onClick={() => navigate('/dashboard/products/manage')}
+              className="btn btn-outline-secondary"
+            >
+              Cancel
             </button>
           </div>
         </form>
@@ -184,4 +194,4 @@ const AddProduct = () => {
   );
 };
 
-export default AddProduct;
+export default EditProduct;

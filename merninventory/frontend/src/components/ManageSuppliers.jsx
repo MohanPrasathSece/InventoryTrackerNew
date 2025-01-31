@@ -56,12 +56,6 @@ const ManageSuppliers = () => {
       </div>
       <div className="d-flex justify-content-between mb-3">
         <Link to="/dashboard/suppliers/add" className="btn btn-primary">Add New Supplier</Link>
-        <a href="http://localhost:5000/api/suppliers/report" 
-           className="btn btn-success" 
-           target="_blank" 
-           rel="noopener noreferrer">
-          Generate Report
-        </a>
       </div>
       <table className="table table-bordered">
         <thead>
