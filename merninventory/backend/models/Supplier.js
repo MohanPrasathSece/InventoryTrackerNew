@@ -21,6 +21,16 @@ const supplierSchema = new mongoose.Schema({
     trim: true,
     match: [/^[0-9]{10}$/, 'Please enter a valid 10-digit phone number']
   },
+  supplyProducts: {
+    type: String,
+    required: [true, 'Supply products are required'],
+    trim: true
+  },
+  paymentTerms: {
+    type: String,
+    required: [true, 'Payment terms are required'],
+    trim: true
+  },
   createdAt: {
     type: Date,
     default: Date.now

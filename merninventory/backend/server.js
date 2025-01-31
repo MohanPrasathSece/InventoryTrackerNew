@@ -11,8 +11,6 @@ const supplierRoutes = require('./routes/supplierRoutes');
 const salesRoutes = require('./routes/salesRoutes');
 const reportsRoutes = require('./routes/reportsRoutes');
 const productRoutes = require('./routes/productRoutes');
-const inventoryRoutes = require('./routes/inventoryRoutes');
-const employeeRoutes = require('./routes/employeeRoutes');
 const dbStatusRoutes = require('./routes/dbStatus');
 
 const app = express();
@@ -43,8 +41,8 @@ const connectWithRetry = async () => {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         dbName: 'inventory-management',
-        serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-        heartbeatFrequencyMS: 1000, // Check the connection more frequently
+        serverSelectionTimeoutMS: 5000,
+        heartbeatFrequencyMS: 1000,
       });
       
       console.log('Successfully connected to MongoDB Atlas');
@@ -79,17 +77,16 @@ const connectWithRetry = async () => {
         setTimeout(connectWithRetry, 5000);
       });
 
-      return; // Exit the retry loop on successful connection
+      return;
     } catch (error) {
       retries++;
       console.error(`MongoDB connection attempt ${retries} failed:`, error.message);
       
       if (retries === maxRetries) {
         console.error('Max retries reached. Could not connect to MongoDB.');
-        process.exit(1); // Exit the process if we can't connect after max retries
+        process.exit(1);
       }
       
-      // Wait for 5 seconds before retrying
       await new Promise(resolve => setTimeout(resolve, 5000));
     }
   }
@@ -109,7 +106,6 @@ app.get('/api/test-db', async (req, res) => {
       3: 'disconnecting'
     };
     
-    // Get database stats if connected
     let stats = null;
     let collections = [];
     
@@ -141,8 +137,6 @@ app.use('/api/suppliers', supplierRoutes);
 app.use('/api/sales', salesRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/products', productRoutes);
-app.use('/api/inventory', inventoryRoutes);
-app.use('/api/employees', employeeRoutes);
 app.use('/api/db-status', dbStatusRoutes);
 
 // Login route
@@ -179,8 +173,8 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
+// Logout route
 app.post('/api/logout', (req, res) => {
-  // Clear the token on the server-side (if using server-side sessions)
   res.clearCookie('token');
   return res.status(200).json({ message: 'Logged out successfully' });
 });
@@ -195,7 +189,7 @@ const orderSchema = new mongoose.Schema({
 
 const Order = mongoose.model('Order', orderSchema);
 
-// API to handle order creation
+// Order routes
 app.post('/api/orders', async (req, res) => {
   const { customerName, productName, quantity, price } = req.body;
 
@@ -208,7 +202,6 @@ app.post('/api/orders', async (req, res) => {
   }
 });
 
-// API to get all orders
 app.get('/api/orders', async (req, res) => {
   try {
     const orders = await Order.find();
@@ -218,7 +211,6 @@ app.get('/api/orders', async (req, res) => {
   }
 });
 
-// API to update an order
 app.put('/api/orders/:id', async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
@@ -238,7 +230,6 @@ app.put('/api/orders/:id', async (req, res) => {
   }
 });
 
-// API to delete an order
 app.delete('/api/orders/:id', async (req, res) => {
   try {
     const order = await Order.findByIdAndDelete(req.params.id);

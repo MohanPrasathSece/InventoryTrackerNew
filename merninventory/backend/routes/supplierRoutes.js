@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Supplier = require('../models/Supplier');
 const Product = require('../models/Product');
+const ExcelJS = require('exceljs');
 
 // Get all suppliers with optional search and filter
 router.get('/', async (req, res) => {
@@ -10,7 +11,13 @@ router.get('/', async (req, res) => {
     let query = {};
 
     if (search) {
-      query.supplierName = { $regex: search, $options: 'i' };
+      query = {
+        $or: [
+          { supplierName: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } },
+          { supplyProducts: { $regex: search, $options: 'i' } }
+        ]
+      };
     }
 
     if (filter) {
@@ -133,6 +140,57 @@ router.delete('/:id', async (req, res) => {
   } catch (error) {
     console.error('Error deleting supplier:', error);
     res.status(500).json({ message: 'Error deleting supplier', error: error.message });
+  }
+});
+
+// Generate supplier report
+router.get('/report', async (req, res) => {
+  try {
+    const suppliers = await Supplier.find({});
+    
+    // Create a new Excel workbook
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Suppliers Report');
+    
+    // Add headers
+    worksheet.columns = [
+      { header: 'Supplier Name', key: 'supplierName', width: 20 },
+      { header: 'Email', key: 'email', width: 30 },
+      { header: 'Phone', key: 'phone', width: 15 },
+      { header: 'Supply Products', key: 'supplyProducts', width: 30 },
+      { header: 'Payment Terms', key: 'paymentTerms', width: 20 },
+      { header: 'Created At', key: 'createdAt', width: 20 }
+    ];
+    
+    // Style the header row
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.getRow(1).fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFD3D3D3' }
+    };
+    
+    // Add data rows
+    suppliers.forEach(supplier => {
+      worksheet.addRow({
+        supplierName: supplier.supplierName,
+        email: supplier.email,
+        phone: supplier.phone,
+        supplyProducts: supplier.supplyProducts,
+        paymentTerms: supplier.paymentTerms,
+        createdAt: supplier.createdAt.toLocaleDateString()
+      });
+    });
+    
+    // Set response headers
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=suppliers-report.xlsx');
+    
+    // Write to response
+    await workbook.xlsx.write(res);
+    
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 

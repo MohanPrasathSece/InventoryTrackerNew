@@ -12,7 +12,6 @@ const AddSupplier = () => {
     paymentTerms: ''
   });
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,26 +24,11 @@ const AddSupplier = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setSuccess('');
 
     try {
-      const response = await axios.post('http://localhost:5000/api/suppliers', formData);
-      console.log('Supplier created:', response.data);
-      setSuccess('Supplier added successfully!');
-      
-      // Reset form
-      setFormData({
-        supplierName: '',
-        email: '',
-        phone: '',
-        supplyProducts: '',
-        paymentTerms: ''
-      });
-
-      // Redirect to manage suppliers page after 2 seconds
-      setTimeout(() => {
-        navigate('/dashboard/suppliers/manage');
-      }, 2000);
+      await axios.post('http://localhost:5000/api/suppliers', formData);
+      // Navigate immediately after successful response
+      navigate('/dashboard/suppliers/manage');
     } catch (error) {
       console.error('Error creating supplier:', error);
       setError(error.response?.data?.message || 'Error adding supplier. Please try again.');
@@ -55,7 +39,6 @@ const AddSupplier = () => {
     <div className="container mt-4">
       <h2>Add New Supplier</h2>
       {error && <div className="alert alert-danger">{error}</div>}
-      {success && <div className="alert alert-success">{success}</div>}
       
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
@@ -126,9 +109,14 @@ const AddSupplier = () => {
           />
         </div>
 
-        <button type="submit" className="btn btn-primary">
-          Add Supplier
-        </button>
+        <div className="mb-3">
+          <button type="submit" className="btn btn-primary me-2">
+            Add Supplier
+          </button>
+          <button type="button" className="btn btn-secondary" onClick={() => navigate('/dashboard/suppliers/manage')}>
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );

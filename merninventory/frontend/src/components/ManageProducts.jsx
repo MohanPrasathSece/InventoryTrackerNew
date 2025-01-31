@@ -7,20 +7,22 @@ const ManageProducts = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [category, setCategory] = useState('');
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [search, category]);
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5000/api/products');
-      console.log('Products fetched:', response.data);
+      const response = await axios.get('http://localhost:5000/api/products', {
+        params: { search, category }
+      });
       setProducts(response.data);
     } catch (error) {
-      console.error('Error fetching products:', error);
-      setError('Error fetching products. Please try again later.');
+      setError('Error fetching products: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
@@ -34,10 +36,9 @@ const ManageProducts = () => {
     try {
       await axios.delete(`http://localhost:5000/api/products/${id}`);
       setSuccess('Product deleted successfully');
-      fetchProducts(); // Refresh the list
+      fetchProducts();
     } catch (error) {
-      console.error('Error deleting product:', error);
-      setError(error.response?.data?.message || 'Error deleting product');
+      setError('Error deleting product: ' + (error.response?.data?.message || error.message));
     }
   };
 
@@ -49,13 +50,44 @@ const ManageProducts = () => {
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>Manage Products</h2>
-        <Link to="/dashboard/products/add" className="btn btn-primary">
-          Add New Product
-        </Link>
+        <div>
+          <Link to="/dashboard/products/add" className="btn btn-primary me-2">
+            Add New Product
+          </Link>
+          <a 
+            href="http://localhost:5000/api/products/report"
+            className="btn btn-success"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Generate Report
+          </a>
+        </div>
       </div>
 
       {error && <div className="alert alert-danger">{error}</div>}
       {success && <div className="alert alert-success">{success}</div>}
+
+      <div className="row mb-3">
+        <div className="col-md-6">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search products..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        <div className="col-md-6">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Filter by category..."
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          />
+        </div>
+      </div>
 
       <div className="table-responsive">
         <table className="table table-striped">
@@ -71,30 +103,36 @@ const ManageProducts = () => {
             </tr>
           </thead>
           <tbody>
-            {products.map(product => (
-              <tr key={product._id}>
-                <td>{product.productName}</td>
-                <td>{product.description}</td>
-                <td>{product.category}</td>
-                <td>${product.price.toFixed(2)}</td>
-                <td>{product.quantity}</td>
-                <td>{product.supplier?.supplierName}</td>
-                <td>
-                  <Link 
-                    to={`/dashboard/products/edit/${product._id}`}
-                    className="btn btn-sm btn-primary me-2"
-                  >
-                    Edit
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(product._id)}
-                    className="btn btn-sm btn-danger"
-                  >
-                    Delete
-                  </button>
-                </td>
+            {products.length > 0 ? (
+              products.map(product => (
+                <tr key={product._id}>
+                  <td>{product.productName}</td>
+                  <td>{product.description}</td>
+                  <td>{product.category}</td>
+                  <td>${product.price.toFixed(2)}</td>
+                  <td>{product.quantity}</td>
+                  <td>{product.supplier?.supplierName}</td>
+                  <td>
+                    <Link 
+                      to={`/dashboard/products/edit/${product._id}`}
+                      className="btn btn-sm btn-warning me-2"
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(product._id)}
+                      className="btn btn-sm btn-danger"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7" className="text-center">No products found</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

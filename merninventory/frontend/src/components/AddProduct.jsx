@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 const AddProduct = () => {
   const navigate = useNavigate();
   const [suppliers, setSuppliers] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
   const [formData, setFormData] = useState({
@@ -26,8 +25,7 @@ const AddProduct = () => {
       const response = await axios.get('http://localhost:5000/api/suppliers');
       setSuppliers(response.data);
     } catch (error) {
-      setError('Error fetching suppliers');
-      console.error('Error:', error);
+      setError('Error fetching suppliers: ' + (error.response?.data?.message || error.message));
     }
   };
 
@@ -41,17 +39,14 @@ const AddProduct = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
 
     try {
       await axios.post('http://localhost:5000/api/products', formData);
-      navigate('/dashboard/products');
+      // Navigate immediately after successful response
+      navigate('/dashboard/products/manage');
     } catch (error) {
-      setError(error.response?.data?.message || 'Error adding product');
-      console.error('Error:', error);
-    } finally {
-      setLoading(false);
+      setError(error.response?.data?.message || 'Error adding product. Please try again.');
     }
   };
 
@@ -141,13 +136,18 @@ const AddProduct = () => {
           </select>
         </div>
 
-        <button 
-          type="submit" 
-          className="btn btn-primary"
-          disabled={loading}
-        >
-          {loading ? 'Adding...' : 'Add Product'}
-        </button>
+        <div className="mb-3">
+          <button type="submit" className="btn btn-primary me-2">
+            Add Product
+          </button>
+          <button 
+            type="button" 
+            className="btn btn-secondary"
+            onClick={() => navigate('/dashboard/products/manage')}
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );
